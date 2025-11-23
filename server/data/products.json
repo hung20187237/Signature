@@ -1,0 +1,178 @@
+[
+    {
+        "_id": "1",
+        "name": "Japanese Gel Pen 0.5mm",
+        "description": "Smooth writing gel pen with quick-drying ink. Perfect for everyday use. The ink is water-resistant and fade-resistant, making it ideal for important documents.",
+        "price": 12.00,
+        "originalPrice": 15.00,
+        "category": "Pens",
+        "brand": "Pilot",
+        "rating": 4.8,
+        "reviewCount": 124,
+        "stock": 100,
+        "isNew": true,
+        "isBestSeller": true,
+        "images": [
+            "https://images.unsplash.com/photo-1585336261022-680e295ce3fe?ixlib=rb-1.2.1&auto=format&fit=crop&w=2070&q=80",
+            "https://images.unsplash.com/photo-1585336261022-680e295ce3fe?ixlib=rb-1.2.1&auto=format&fit=crop&w=2070&q=80",
+            "https://images.unsplash.com/photo-1585336261022-680e295ce3fe?ixlib=rb-1.2.1&auto=format&fit=crop&w=2070&q=80"
+        ],
+        "options": [
+            {
+                "name": "Color",
+                "values": [
+                    "Black",
+                    "Blue",
+                    "Red"
+                ]
+            }
+        ],
+        "specs": {
+            "Material": "Plastic body, Rubber grip",
+            "Ink Type": "Gel",
+            "Tip Size": "0.5mm",
+            "Origin": "Japan",
+            "Refillable": "Yes"
+        }
+    },
+    {
+        "_id": "2",
+        "name": "Uni-ball One F",
+        "description": "Fade resistant ink with a modern design. The weighted tip provides stability. Features a metal stabilizer mechanism for a low center of gravity.",
+        "price": 5.50,
+        "category": "Pens",
+        "brand": "Uni-ball",
+        "rating": 4.5,
+        "reviewCount": 89,
+        "stock": 50,
+        "isNew": false,
+        "isBestSeller": true,
+        "images": [
+            "https://images.unsplash.com/photo-1585336261022-680e295ce3fe?ixlib=rb-1.2.1&auto=format&fit=crop&w=2070&q=80"
+        ],
+        "options": [
+            {
+                "name": "Color",
+                "values": [
+                    "Black",
+                    "Blue-Black"
+                ]
+            }
+        ],
+        "specs": {
+            "Material": "Plastic",
+            "Ink Type": "Gel",
+            "Tip Size": "0.38mm",
+            "Origin": "Japan"
+        }
+    },
+    {
+        "_id": "3",
+        "name": "Premium Fountain Pen",
+        "description": "Elegant fountain pen with a gold-plated nib. A classic choice for enthusiasts. Comes in a gift box.",
+        "price": 45.00,
+        "category": "Pens",
+        "brand": "Platinum",
+        "rating": 5.0,
+        "reviewCount": 42,
+        "stock": 5,
+        "isNew": false,
+        "isBestSeller": false,
+        "images": [
+            "https://images.unsplash.com/photo-1585336261022-680e295ce3fe?ixlib=rb-1.2.1&auto=format&fit=crop&w=2070&q=80"
+        ],
+        "options": [
+            {
+                "name": "Nib",
+                "values": [
+                    "F",
+                    "M",
+                    "B"
+                ]
+            }
+        ],
+        "specs": {
+            "Material": "Resin, Gold Plated Trim",
+            "Nib Material": "14k Gold",
+            "Filling Mechanism": "Cartridge/Converter",
+            "Origin": "Japan"
+        }
+    },
+    {
+        "_id": "4",
+        "name": "Mechanical Pencil 0.5mm",
+        "description": "Precision mechanical pencil with auto-rotation mechanism to keep the lead sharp.",
+        "price": 8.00,
+        "category": "Pencils",
+        "brand": "Uni",
+        "rating": 4.7,
+        "reviewCount": 215,
+        "stock": 80,
+        "isNew": true,
+        "isBestSeller": false,
+        "images": [
+            "https://images.unsplash.com/photo-1585336261022-680e295ce3fe?ixlib=rb-1.2.1&auto=format&fit=crop&w=2070&q=80"
+        ],
+        "options": [
+            {
+                "name": "Color",
+                "values": [
+                    "Silver",
+                    "Black"
+                ]
+            }
+        ],
+        "specs": {
+            "Material": "Plastic",
+            "Lead Size": "0.5mm",
+            "Mechanism": "Auto-rotation",
+            "Origin": "Japan"
+        }
+    },
+    {
+        "_id": "5",
+        "name": "Midori MD Notebook",
+        "description": "Minimalist notebook with high-quality paper suitable for fountain pens. Thread binding allows it to open flat.",
+        "price": 14.00,
+        "category": "Paper",
+        "brand": "Midori",
+        "rating": 4.9,
+        "reviewCount": 340,
+        "stock": 200,
+        "isNew": false,
+        "isBestSeller": true,
+        "images": [
+            "https://images.unsplash.com/photo-1544816155-12df9643f363?auto=format&fit=crop&w=800&q=80"
+        ],
+        "specs": {
+            "Size": "A5",
+            "Pages": "176",
+            "Paper Type": "MD Paper Cream",
+            "Binding": "Thread Binding",
+            "Origin": "Japan"
+        }
+    },
+    {
+        "_id": "6",
+        "name": "Kokuyo Campus Notebook",
+        "description": "The standard for students in Japan. Silky smooth paper.",
+        "price": 3.50,
+        "originalPrice": 5.00,
+        "category": "Paper",
+        "brand": "Kokuyo",
+        "rating": 4.6,
+        "reviewCount": 500,
+        "stock": 15,
+        "isNew": false,
+        "isBestSeller": true,
+        "images": [
+            "https://images.unsplash.com/photo-1535572290543-960a8046f5af?auto=format&fit=crop&w=800&q=80"
+        ],
+        "specs": {
+            "Size": "B5",
+            "Pages": "30",
+            "Rule": "6mm Dotted",
+            "Origin": "Japan"
+        }
+    }
+]

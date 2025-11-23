@@ -1,0 +1,4 @@
+@import "tailwindcss";
+
+/* Ant Design styles - imported after Tailwind to allow overrides */
+@import 'antd/dist/reset.css';
