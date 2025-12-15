@@ -187,7 +187,7 @@ const Login = () => {
         localStorage.setItem('userInfo', JSON.stringify(data));
         message.success('Login successful!');
         if (data.isAdmin || data.role === 'admin') {
-          navigate('/admin/dashboard');
+          navigate('/admin');
         } else {
           navigate('/');
         }

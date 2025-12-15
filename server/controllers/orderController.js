@@ -15,26 +15,68 @@ const addOrderItems = async (req, res) => {
             taxPrice,
             shippingPrice,
             totalPrice,
+            email // Optional, or from shippingAddress
         } = req.body;
 
         if (orderItems && orderItems.length === 0) {
             res.status(400).json({ message: 'No order items' });
             return;
-        } else {
-            const order = await Order.create({
-                userId: req.user.id,
-                orderItems,
-                shippingAddress,
-                billingAddress: billingAddress || shippingAddress,
-                paymentMethod,
-                itemsPrice,
-                taxPrice,
-                shippingPrice,
-                totalPrice,
-            });
-
-            res.status(201).json(order);
         }
+
+        let userId = null;
+        let user = null;
+
+        // 1. Determine User (Logged in or Guest)
+        if (req.user) {
+            userId = req.user.id;
+            user = req.user;
+        } else {
+            // Guest Checkout
+            const customerEmail = email || shippingAddress?.email;
+
+            if (!customerEmail) {
+                res.status(400).json({ message: 'Email is required for guest checkout' });
+                return;
+            }
+
+            user = await User.findOne({ where: { email: customerEmail } });
+
+            if (user) {
+                userId = user.id;
+            } else {
+                // Create new guest user
+                user = await User.create({
+                    name: shippingAddress?.name || 'Guest',
+                    email: customerEmail,
+                    password: null,
+                    isGuest: true,
+                    addresses: shippingAddress ? [shippingAddress] : []
+                });
+                userId = user.id;
+            }
+        }
+
+        const order = await Order.create({
+            userId: userId,
+            orderItems,
+            shippingAddress,
+            billingAddress: billingAddress || shippingAddress,
+            paymentMethod,
+            itemsPrice,
+            taxPrice,
+            shippingPrice,
+            totalPrice,
+        });
+
+        // 2. Update User Stats
+        if (user) {
+            user.totalOrders = (user.totalOrders || 0) + 1;
+            user.totalSpent = (parseFloat(user.totalSpent || 0) + parseFloat(totalPrice)).toFixed(2);
+            user.lastOrderAt = new Date();
+            await user.save();
+        }
+
+        res.status(201).json(order);
     } catch (error) {
         res.status(500).json({ message: error.message });
     }

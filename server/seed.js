@@ -2,6 +2,16 @@ const { sequelize } = require('./config/db');
 const User = require('./models/User');
 const Product = require('./models/Product');
 const Order = require('./models/Order');
+const Address = require('./models/Address');
+const Tag = require('./models/Tag');
+const Note = require('./models/Note');
+const Collection = require('./models/Collection');
+const CollectionProduct = require('./models/CollectionProduct');
+const CollectionRule = require('./models/CollectionRule');
+
+// Define Associations for Seeding
+User.hasMany(Address, { foreignKey: 'customerId', as: 'addresses' });
+Address.belongsTo(User, { foreignKey: 'customerId' });
 
 const seedData = async () => {
     try {
@@ -27,15 +37,19 @@ const seedData = async () => {
             email: 'john@example.com',
             password: 'password123',
             addresses: [{
-                name: 'John Doe',
+                firstName: 'John',
+                lastName: 'Doe',
                 address1: '1-2-3 Shibuya',
                 city: 'Tokyo',
-                province: 'Tokyo',
-                zip: '150-0002',
+                state: 'Tokyo',
+                postalCode: '150-0002',
                 country: 'Japan',
                 phone: '+81-3-1234-5678',
-                isDefault: true
+                isDefaultShipping: true,
+                isDefaultBilling: true
             }]
+        }, {
+            include: [{ model: Address, as: 'addresses' }]
         });
         console.log('✅ Regular user created (email: john@example.com, password: password123)');
 
@@ -190,10 +204,7 @@ const seedData = async () => {
 
         console.log(`✅ Created 2 sample orders`);
 
-        console.log('\n🎉 Database seeding completed successfully!\n');
-        console.log('📝 Login credentials:');
-        console.log('   Admin: admin@bungu.store / admin123');
-        console.log('   User:  john@example.com / password123\n');
+        // Create Collections
 
         process.exit(0);
     } catch (error) {

@@ -8,10 +8,10 @@ const {
     getMyOrders,
     getOrders,
 } = require('../controllers/orderController');
-const { protect, admin } = require('../middleware/authMiddleware');
+const { protect, admin, optionalProtect } = require('../middleware/authMiddleware');
 
 router.route('/')
-    .post(protect, addOrderItems)
+    .post(optionalProtect, addOrderItems)
     .get(protect, admin, getOrders);
 
 router.route('/myorders').get(protect, getMyOrders);

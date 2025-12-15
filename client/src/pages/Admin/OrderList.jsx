@@ -167,8 +167,8 @@ const OrderList = () => {
     const columns = [
         {
             title: 'Order #',
-            dataIndex: '_id',
-            key: '_id',
+            dataIndex: 'id',
+            key: 'id',
             render: (text) => <a onClick={() => navigate(`/admin/orders/${text}`)}>#{text}</a>,
         },
         {
@@ -180,12 +180,12 @@ const OrderList = () => {
         },
         {
             title: 'Customer',
-            dataIndex: 'customer',
-            key: 'customer',
-            render: (customer) => (
+            dataIndex: 'User',
+            key: 'User',
+            render: (user) => (
                 <div>
-                    <div style={{ fontWeight: 500 }}>{customer.name}</div>
-                    <div style={{ fontSize: '12px', color: '#666' }}>{customer.email}</div>
+                    <div style={{ fontWeight: 500 }}>{user?.name || 'Guest'}</div>
+                    <div style={{ fontSize: '12px', color: '#666' }}>{user?.email || 'No email'}</div>
                 </div>
             ),
         },
@@ -216,10 +216,10 @@ const OrderList = () => {
         },
         {
             title: 'Total',
-            dataIndex: 'total',
-            key: 'total',
-            render: (total) => `¥${total.toLocaleString()}`,
-            sorter: (a, b) => a.total - b.total,
+            dataIndex: 'totalPrice',
+            key: 'totalPrice',
+            render: (total) => `¥${(total || 0).toLocaleString()}`,
+            sorter: (a, b) => (a.totalPrice || 0) - (b.totalPrice || 0),
         },
         {
             title: 'Country',
@@ -235,7 +235,7 @@ const OrderList = () => {
                     <Button
                         type="text"
                         icon={<EyeOutlined />}
-                        onClick={() => navigate(`/admin/orders/${record._id}`)}
+                        onClick={() => navigate(`/admin/orders/${record.id}`)}
                     />
                     <Dropdown
                         menu={{
@@ -243,7 +243,7 @@ const OrderList = () => {
                                 { key: 'invoice', label: 'Print Invoice', icon: <FileTextOutlined /> },
                                 { key: 'packing', label: 'Print Packing Slip', icon: <PrinterOutlined /> },
                             ],
-                            onClick: ({ key }) => message.success(`${key} for #${record._id}`)
+                            onClick: ({ key }) => message.success(`${key} for #${record.id}`)
                         }}
                         trigger={['click']}
                     >
@@ -255,9 +255,9 @@ const OrderList = () => {
     ];
 
     const filteredOrders = orders.filter(order =>
-        order._id.includes(searchText) ||
-        order.customer.name.toLowerCase().includes(searchText.toLowerCase()) ||
-        order.customer.email.toLowerCase().includes(searchText.toLowerCase())
+        (order.id && order.id.toString().includes(searchText)) ||
+        (order.User && order.User.name && order.User.name.toLowerCase().includes(searchText.toLowerCase())) ||
+        (order.User && order.User.email && order.User.email.toLowerCase().includes(searchText.toLowerCase()))
     );
 
     return (
@@ -303,14 +303,14 @@ const OrderList = () => {
                 rowSelection={rowSelection}
                 columns={columns}
                 dataSource={filteredOrders}
-                rowKey="_id"
+                rowKey="id"
                 loading={loading}
                 pagination={{ pageSize: 10 }}
                 onRow={(record) => ({
                     onClick: (e) => {
                         // Prevent navigation if clicking checkbox or action buttons
                         if (e.target.closest('.ant-checkbox-wrapper') || e.target.closest('.ant-btn')) return;
-                        navigate(`/admin/orders/${record._id}`);
+                        navigate(`/admin/orders/${record.id}`);
                     },
                     style: { cursor: 'pointer' }
                 })}

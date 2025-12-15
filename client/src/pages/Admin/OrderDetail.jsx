@@ -82,16 +82,14 @@ const OrderDetail = () => {
 
     // Mock data
     const mockOrder = {
-        _id: id,
+        id: id,
         createdAt: '2023-11-20T10:30:00Z',
-        status: 'Confirmed',
+        orderStatus: 'Confirmed',
         paymentStatus: 'Paid',
         fulfillmentStatus: 'Unfulfilled',
-        customer: {
+        User: {
             name: 'John Doe',
             email: 'john@example.com',
-            phone: '+81 90-1234-5678',
-            ordersCount: 3
         },
         shippingAddress: {
             name: 'John Doe',
@@ -101,7 +99,8 @@ const OrderDetail = () => {
             province: 'Tokyo',
             zip: '150-0001',
             country: 'Japan',
-            countryCode: 'JP'
+            countryCode: 'JP',
+            phone: '+81 90-1234-5678'
         },
         billingAddress: {
             name: 'John Doe',
@@ -112,32 +111,30 @@ const OrderDetail = () => {
             zip: '150-0001',
             country: 'Japan'
         },
-        items: [
+        orderItems: [
             {
-                _id: 'p1',
+                id: 'p1',
                 name: 'Jetstream 4&1 Metal Edition',
                 variant: 'Black',
                 sku: 'UNI-JET-41-BLK',
                 price: 2200,
-                quantity: 1,
-                total: 2200,
+                qty: 1,
                 image: 'https://bungu.store/cdn/shop/files/uni-jetstream-4-1-metal-edition-2200-yen-668.jpg?v=1709712345'
             },
             {
-                _id: 'p2',
+                id: 'p2',
                 name: 'Mildliner Double-Sided Highlighter',
                 variant: '5 Color Set',
                 sku: 'ZEB-MILD-5SET',
                 price: 550,
-                quantity: 2,
-                total: 1100,
+                qty: 2,
                 image: 'https://bungu.store/cdn/shop/products/zebra-mildliner-double-sided-highlighter-5-color-set-550-yen.jpg?v=1623300000'
             }
         ],
-        subtotal: 3300,
-        shipping: 500,
-        tax: 330,
-        total: 4130,
+        itemsPrice: 3300,
+        shippingPrice: 500,
+        taxPrice: 330,
+        totalPrice: 4130,
         transactions: [
             {
                 id: 'pi_1234567890',
@@ -244,12 +241,12 @@ const OrderDetail = () => {
                 <HeaderTitle>
                     <Button icon={<ArrowLeftOutlined />} onClick={() => navigate('/admin/orders')} style={{ marginRight: 16 }} />
                     <div>
-                        <h1>Order #{order._id}</h1>
+                        <h1>Order #{order.id}</h1>
                         <Space size="small" style={{ marginTop: 4 }}>
                             <Text type="secondary">{dayjs(order.createdAt).format('MMMM D, YYYY [at] h:mm A')}</Text>
                             <Tag color={order.paymentStatus === 'Paid' ? 'success' : 'warning'}>{order.paymentStatus}</Tag>
                             <Tag color={order.fulfillmentStatus === 'Fulfilled' ? 'success' : 'warning'}>{order.fulfillmentStatus}</Tag>
-                            <Tag color="cyan">{order.status}</Tag>
+                            <Tag color="cyan">{order.orderStatus}</Tag>
                         </Space>
                     </div>
                 </HeaderTitle>
@@ -268,7 +265,7 @@ const OrderDetail = () => {
                     <StyledCard title="Order Items">
                         <List
                             itemLayout="horizontal"
-                            dataSource={order.items}
+                            dataSource={order.orderItems || []}
                             renderItem={item => (
                                 <List.Item>
                                     <List.Item.Meta
@@ -282,8 +279,8 @@ const OrderDetail = () => {
                                         }
                                     />
                                     <div style={{ textAlign: 'right' }}>
-                                        <div>¥{item.price.toLocaleString()} x {item.quantity}</div>
-                                        <div style={{ fontWeight: 500 }}>¥{item.total.toLocaleString()}</div>
+                                        <div>¥{(item.price || 0).toLocaleString()} x {item.qty || item.quantity || 1}</div>
+                                        <div style={{ fontWeight: 500 }}>¥{((item.price || 0) * (item.qty || item.quantity || 1)).toLocaleString()}</div>
                                     </div>
                                 </List.Item>
                             )}
@@ -293,20 +290,20 @@ const OrderDetail = () => {
                             <Col span={10}>
                                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
                                     <Text>Subtotal</Text>
-                                    <Text>¥{order.subtotal.toLocaleString()}</Text>
+                                    <Text>¥{(order.itemsPrice || 0).toLocaleString()}</Text>
                                 </div>
                                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
                                     <Text>Shipping</Text>
-                                    <Text>¥{order.shipping.toLocaleString()}</Text>
+                                    <Text>¥{(order.shippingPrice || 0).toLocaleString()}</Text>
                                 </div>
                                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
                                     <Text>Tax</Text>
-                                    <Text>¥{order.tax.toLocaleString()}</Text>
+                                    <Text>¥{(order.taxPrice || 0).toLocaleString()}</Text>
                                 </div>
                                 <Divider style={{ margin: '12px 0' }} />
                                 <div style={{ display: 'flex', justifyContent: 'space-between', fontWeight: 'bold', fontSize: '1.1rem' }}>
                                     <Text strong>Total</Text>
-                                    <Text strong>¥{order.total.toLocaleString()}</Text>
+                                    <Text strong>¥{(order.totalPrice || 0).toLocaleString()}</Text>
                                 </div>
                             </Col>
                         </Row>
@@ -395,15 +392,15 @@ const OrderDetail = () => {
                         <div style={{ display: 'flex', alignItems: 'center', marginBottom: 16 }}>
                             <Avatar icon={<UserOutlined />} style={{ marginRight: 12 }} />
                             <div>
-                                <div style={{ fontWeight: 500 }}>{order.customer.name}</div>
-                                <div style={{ color: '#1890ff' }}>{order.customer.ordersCount} orders</div>
+                                <div style={{ fontWeight: 500 }}>{order.User?.name || 'Guest'}</div>
+                                <div style={{ color: '#1890ff' }}>Customer</div>
                             </div>
                         </div>
                         <Space direction="vertical" size={12} style={{ width: '100%' }}>
                             <div>
                                 <Text strong>Contact Information</Text>
-                                <div><a href={`mailto:${order.customer.email}`}>{order.customer.email}</a></div>
-                                <div>{order.customer.phone}</div>
+                                <div><a href={`mailto:${order.User?.email}`}>{order.User?.email}</a></div>
+                                <div>{order.shippingAddress?.phone}</div>
                             </div>
                             <Divider style={{ margin: '4px 0' }} />
                             <div>

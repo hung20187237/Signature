@@ -14,10 +14,13 @@ const connectDB = async () => {
         console.log('SQLite Database Connected');
 
         // Sync all models
-        await sequelize.sync({ alter: true });
+        await sequelize.sync();
         console.log('Database synchronized');
     } catch (error) {
         console.error(`Error: ${error.message}`);
+        if (error.errors) {
+            console.error('Validation Errors:', JSON.stringify(error.errors, null, 2));
+        }
         process.exit(1);
     }
 };

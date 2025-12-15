@@ -22,19 +22,40 @@ const User = sequelize.define('User', {
     },
     password: {
         type: DataTypes.STRING,
-        allowNull: false,
+        allowNull: true, // Allow null for guest users
     },
     isAdmin: {
         type: DataTypes.BOOLEAN,
         defaultValue: false,
     },
     role: {
-        type: DataTypes.ENUM('customer', 'admin', 'super_admin', 'catalog_manager', 'content_manager', 'support'),
-        defaultValue: 'customer',
+        type: DataTypes.STRING,
+        defaultValue: 'user',
     },
-    addresses: {
-        type: DataTypes.JSON,
-        defaultValue: [],
+    isGuest: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: false,
+    },
+    totalSpent: {
+        type: DataTypes.DECIMAL(10, 2),
+        defaultValue: 0.00,
+    },
+    totalOrders: {
+        type: DataTypes.INTEGER,
+        defaultValue: 0,
+    },
+    lastOrderAt: {
+        type: DataTypes.DATE,
+    },
+    acceptsMarketing: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: false,
+    },
+    resetPasswordToken: {
+        type: DataTypes.STRING,
+    },
+    resetPasswordExpire: {
+        type: DataTypes.DATE,
     },
 }, {
     timestamps: true,
@@ -56,6 +77,7 @@ const User = sequelize.define('User', {
 
 // Instance method to match password
 User.prototype.matchPassword = async function (enteredPassword) {
+    if (!this.password) return false;
     return await bcrypt.compare(enteredPassword, this.password);
 };
 
