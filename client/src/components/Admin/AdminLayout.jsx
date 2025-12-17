@@ -10,9 +10,10 @@ import {
     SettingOutlined,
     LogoutOutlined,
     TagsOutlined,
-    AppstoreOutlined
+    AppstoreOutlined,
+    FileImageOutlined
 } from '@ant-design/icons';
-import { useNavigate, useLocation, Outlet } from 'react-router-dom';
+import { useNavigate, useLocation, Outlet, Link } from 'react-router-dom';
 import styled from 'styled-components';
 
 const { Header, Sider, Content } = Layout;
@@ -77,7 +78,7 @@ const AdminLayout = () => {
         {
             key: '/admin/customers',
             icon: <UserOutlined />,
-            label: 'Customers',
+            label: <Link to="/admin/customers">Customers</Link>, // Modified label to use Link
         },
         {
             key: '/admin/collections',
@@ -86,11 +87,11 @@ const AdminLayout = () => {
         },
         {
             key: '/admin/content',
-            icon: <TagsOutlined />,
+            icon: <FileImageOutlined />, // Changed icon to FileImageOutlined
             label: 'Content',
             children: [
-                { key: '/admin/content/banners', label: 'Banners' },
-                { key: '/admin/content/blog', label: 'Blog Posts' },
+                { key: '/admin/content/banners', label: <Link to="/admin/content/banners">Banners</Link> },
+                { key: '/admin/content/blog', label: <Link to="/admin/content/blog">Blog Posts</Link> },
             ],
         },
         {

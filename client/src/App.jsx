@@ -11,8 +11,14 @@ import AboutUs from './pages/AboutUs';
 import ContactUs from './pages/ContactUs';
 import Login from './pages/Login';
 import Register from './pages/Register';
-import SearchResults from './pages/SearchResults';
 import CollectionPage from './pages/Shop/CollectionPage';
+import SearchResults from './pages/SearchResults';
+import ShopBlogList from './pages/Shop/BlogList';
+import ShopBlogPost from './pages/Shop/BlogPost';
+import BannerList from './pages/Admin/BannerList';
+import BannerDetail from './pages/Admin/BannerDetail';
+import BlogList from './pages/Admin/Blog/BlogList';
+import BlogDetail from './pages/Admin/Blog/BlogDetail';
 
 // Admin Imports
 import AdminLayout from './components/Admin/AdminLayout';
@@ -56,6 +62,8 @@ const CustomerLayout = () => {
           <Route path="/login" element={<Login />} />
           <Route path="/account/register" element={<Register />} />
           <Route path="/search" element={<SearchResults />} />
+          <Route path="/reads" element={<ShopBlogList />} />
+          <Route path="/reads/:slug" element={<ShopBlogPost />} />
         </Routes>
       </main>
       <Footer />
@@ -81,6 +89,11 @@ function App() {
             <Route path="products/edit/:id" element={<ProductForm />} />
             <Route path="collections" element={<CollectionList />} />
             <Route path="collections/:id" element={<CollectionDetail />} />
+            <Route path="collections/:id" element={<CollectionDetail />} />
+            <Route path="content/banners" element={<BannerList />} />
+            <Route path="content/banners/:id" element={<BannerDetail />} />
+            <Route path="content/blog" element={<BlogList />} />
+            <Route path="content/blog/:id" element={<BlogDetail />} />
             <Route path="orders" element={<OrderList />} />
             <Route path="orders/new" element={<CreateOrder />} />
             <Route path="orders/:id" element={<OrderDetail />} />

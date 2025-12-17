@@ -416,6 +416,11 @@ const navStructure = {
             }
         ]
     },
+    reads: {
+        name: 'Reads',
+        type: 'link',
+        href: '/reads'
+    },
     rewards: {
         name: 'Rewards',
         type: 'link',

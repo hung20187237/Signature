@@ -1,6 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const dotenv = require('dotenv');
+const path = require('path');
 const { connectDB } = require('./config/db');
 const productRoutes = require('./routes/productRoutes');
 const userRoutes = require('./routes/userRoutes');
@@ -12,7 +13,13 @@ const Product = require('./models/Product');
 const Collection = require('./models/Collection');
 const CollectionProduct = require('./models/CollectionProduct');
 const CollectionRule = require('./models/CollectionRule');
+const Banner = require('./models/Banner');
 const collectionRoutes = require('./routes/collectionRoutes');
+const bannerRoutes = require('./routes/bannerRoutes');
+const blogRoutes = require('./routes/blogRoutes');
+const BlogPost = require('./models/BlogPost');
+const BlogCategory = require('./models/BlogCategory');
+const BlogTag = require('./models/BlogTag');
 
 dotenv.config();
 
@@ -51,12 +58,30 @@ CollectionProduct.belongsTo(Collection, { foreignKey: 'collectionId' });
 Collection.hasMany(CollectionRule, { foreignKey: 'collectionId', as: 'rules' });
 CollectionRule.belongsTo(Collection, { foreignKey: 'collectionId' });
 
-// Routes
+// Blog Associations
+BlogPost.belongsTo(BlogCategory, { foreignKey: 'categoryId', as: 'category' });
+BlogCategory.hasMany(BlogPost, { foreignKey: 'categoryId', as: 'posts' });
+
+BlogPost.belongsToMany(BlogTag, { through: 'BlogPostTags', as: 'tags' });
+BlogTag.belongsToMany(BlogPost, { through: 'BlogPostTags', as: 'posts' });
+
+
+
+const uploadRoutes = require('./routes/uploadRoutes');
+
+// ... routes
+app.use('/api/upload', uploadRoutes);
+
+// Make uploads folder static
+app.use('/uploads', express.static(path.join(__dirname, '/uploads')));
+
 app.use('/api/products', productRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/orders', orderRoutes);
 app.use('/api/dashboard', dashboardRoutes);
 app.use('/api/collections', collectionRoutes);
+app.use('/api/banners', bannerRoutes);
+app.use('/api/blog', blogRoutes);
 
 app.get('/', (req, res) => {
     res.send('API is running...');

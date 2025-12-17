@@ -8,10 +8,19 @@ const Note = require('./models/Note');
 const Collection = require('./models/Collection');
 const CollectionProduct = require('./models/CollectionProduct');
 const CollectionRule = require('./models/CollectionRule');
+const Banner = require('./models/Banner');
+const BlogPost = require('./models/BlogPost');
+const BlogCategory = require('./models/BlogCategory');
+const BlogTag = require('./models/BlogTag');
 
 // Define Associations for Seeding
 User.hasMany(Address, { foreignKey: 'customerId', as: 'addresses' });
 Address.belongsTo(User, { foreignKey: 'customerId' });
+
+BlogPost.belongsTo(BlogCategory, { foreignKey: 'categoryId', as: 'category' });
+BlogCategory.hasMany(BlogPost, { foreignKey: 'categoryId', as: 'posts' });
+BlogPost.belongsToMany(BlogTag, { through: 'BlogPostTags', as: 'tags' });
+BlogTag.belongsToMany(BlogPost, { through: 'BlogPostTags', as: 'posts' });
 
 const seedData = async () => {
     try {
@@ -20,6 +29,26 @@ const seedData = async () => {
         // Clear existing data
         await sequelize.sync({ force: true });
         console.log('✅ Database cleared');
+
+        // Create Banners
+        await Banner.create({
+            title: 'Free Shipping on orders over $50',
+            placement: 'home_promo',
+            status: 'active',
+            priority: 10
+        });
+
+        await Banner.create({
+            title: 'Shop Our Collections',
+            subtitle: 'Curated for your creativity',
+            placement: 'collection_hero',
+            layout: 'centered_card',
+            imageUrl: 'https://bungu.store/cdn/shop/files/collection-hero.jpg',
+            status: 'active',
+            priority: 10
+        });
+
+        console.log('✅ Banners created');
 
         // Create Admin User
         const adminUser = await User.create({
@@ -205,6 +234,93 @@ const seedData = async () => {
         console.log(`✅ Created 2 sample orders`);
 
         // Create Collections
+        // 1. Manual Collection: Staff Picks
+        const manualCollection = await Collection.create({
+            title: 'Staff Picks',
+            handle: 'staff-picks',
+            description: 'Our team\'s favorite stationery items.',
+            image: 'https://bungu.store/cdn/shop/collections/staff-picks.jpg',
+            type: 'manual',
+            status: 'active',
+            publishedAt: new Date()
+        });
+
+        // Add products to Manual Collection
+        await CollectionProduct.create({ collectionId: manualCollection.id, productId: products[0].id, position: 1 });
+        await CollectionProduct.create({ collectionId: manualCollection.id, productId: products[4].id, position: 2 });
+        await CollectionProduct.create({ collectionId: manualCollection.id, productId: products[5].id, position: 3 });
+
+        // 2. Automatic Collection: Under ¥500
+        const autoCollection = await Collection.create({
+            title: 'Under ¥500',
+            handle: 'under-500',
+            description: 'Affordable stationery for everyday use.',
+            type: 'automatic',
+            status: 'active',
+            matchPolicy: 'all',
+            publishedAt: new Date()
+        });
+
+        await CollectionRule.create({
+            collectionId: autoCollection.id,
+            field: 'price',
+            operator: 'lt',
+            value: '500'
+        });
+
+        // 3. Automatic Collection: Deals (Sale)
+        const dealsCollection = await Collection.create({
+            title: 'Deals & Offers',
+            handle: 'deals',
+            description: 'Best prices on premium items.',
+            type: 'automatic',
+            status: 'active',
+            matchPolicy: 'any',
+            publishedAt: new Date()
+        });
+
+        await CollectionRule.create({
+            collectionId: dealsCollection.id,
+            field: 'tag',
+            operator: 'equals',
+            value: 'sale'
+        });
+
+        console.log('✅ Collections created');
+
+        // Create Blogs
+        const guideCategory = await BlogCategory.create({ name: 'Guides', slug: 'guides', description: 'Helpful user guides.' });
+        const newsCategory = await BlogCategory.create({ name: 'News', slug: 'news', description: 'Latest updates.' });
+
+        const fountainPenTag = await BlogTag.create({ name: 'Fountain Pens', slug: 'fountain-pens' });
+        const paperTag = await BlogTag.create({ name: 'Paper', slug: 'paper' });
+
+        const post1 = await BlogPost.create({
+            title: 'How to Choose Your First Fountain Pen',
+            slug: 'how-to-choose-first-fountain-pen',
+            excerpt: 'A comprehensive guide for beginners looking to enter the world of fountain pens.',
+            content: '<h2>Why Fountain Pens?</h2><p>They are amazing...</p><h3>Nib Sizes</h3><p>Choose Fine for daily writing...</p>',
+            status: 'published',
+            publishedAt: new Date(),
+            categoryId: guideCategory.id,
+            thumbnailUrl: 'https://bungu.store/cdn/shop/articles/fountain_pen_guide.jpg',
+            authorName: 'Bungu Editor'
+        });
+        await post1.addTag(fountainPenTag);
+
+        const post2 = await BlogPost.create({
+            title: 'Top 5 Notebooks for 2025',
+            slug: 'top-5-notebooks-2025',
+            excerpt: 'Our curated list of the best paper for every need.',
+            content: '<p>Here are our top picks...</p>',
+            status: 'published',
+            publishedAt: new Date(),
+            categoryId: guideCategory.id,
+            authorName: 'Paper Expert'
+        });
+        await post2.addTag(paperTag);
+
+        console.log('✅ Blog data created');
 
         process.exit(0);
     } catch (error) {

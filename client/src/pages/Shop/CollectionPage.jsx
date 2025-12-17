@@ -5,6 +5,7 @@ import axios from '../../utils/axios';
 import { Spin, Select, Empty, Pagination } from 'antd';
 import ProductCard from '../../components/Product/ProductCard';
 import Breadcrumb from '../../components/Layout/Breadcrumb';
+import BannerSection from '../../components/Shop/BannerSection';
 
 const { Option } = Select;
 
@@ -108,6 +109,8 @@ const CollectionPage = () => {
         <PageContainer>
             <Container>
                 <Breadcrumb />
+
+                <BannerSection placement={handle === 'deals' ? 'deals_hero' : 'collection_hero'} />
 
                 {collection && (
                     <HeaderSection>
