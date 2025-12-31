@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { Drawer, List, InputNumber, Button, Divider, Empty, Typography } from 'antd';
 import { CloseOutlined, MinusOutlined, PlusOutlined, ShoppingOutlined } from '@ant-design/icons';
 import { useCart } from '../../context/CartContext';
+import { useSettings } from '../../context/SettingsContext';
 
 const { Text, Title } = Typography;
 
@@ -15,6 +16,7 @@ const CartDrawer = () => {
         isCartOpen,
         closeCart
     } = useCart();
+    const { formatCurrency } = useSettings();
 
     return (
         <Drawer
@@ -29,7 +31,7 @@ const CartDrawer = () => {
                         {/* Subtotal */}
                         <div className="flex items-center justify-between">
                             <Text strong style={{ fontSize: 18 }}>Subtotal:</Text>
-                            <Text strong style={{ fontSize: 18 }}>${getCartTotal().toFixed(2)}</Text>
+                            <Text strong style={{ fontSize: 18 }}>{formatCurrency(getCartTotal())}</Text>
                         </div>
 
                         {/* Actions */}
@@ -123,15 +125,15 @@ const CartDrawer = () => {
                                         {item.originalPrice && item.originalPrice > item.price ? (
                                             <div className="flex items-center gap-2">
                                                 <Text strong style={{ color: '#dc2626', fontSize: 14 }}>
-                                                    ${item.price.toFixed(2)}
+                                                    {formatCurrency(item.price)}
                                                 </Text>
                                                 <Text delete type="secondary" style={{ fontSize: 12 }}>
-                                                    ${item.originalPrice.toFixed(2)}
+                                                    {formatCurrency(item.originalPrice)}
                                                 </Text>
                                             </div>
                                         ) : (
                                             <Text strong style={{ fontSize: 14 }}>
-                                                ${item.price.toFixed(2)}
+                                                {formatCurrency(item.price)}
                                             </Text>
                                         )}
                                         <div>
@@ -162,7 +164,7 @@ const CartDrawer = () => {
                                             style={{ width: 80 }}
                                         />
                                         <Text type="secondary" style={{ fontSize: 14 }}>
-                                            Total: ${(item.price * item.quantity).toFixed(2)}
+                                            Total: {formatCurrency(item.price * item.quantity)}
                                         </Text>
                                     </div>
 

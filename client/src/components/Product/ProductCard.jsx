@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 import { Card, Tag, Button, Rate, Typography } from 'antd';
 import { EyeOutlined, ShoppingCartOutlined } from '@ant-design/icons';
+import { useSettings } from '../../context/SettingsContext';
 
 const { Text } = Typography;
 
@@ -179,100 +180,101 @@ const MobileButton = styled(Link)`
 `;
 
 const ProductCard = ({ product }) => {
-    const discount = product.originalPrice
-        ? Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)
-        : 0;
+  const { formatCurrency } = useSettings();
+  const discount = product.originalPrice
+    ? Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)
+    : 0;
 
-    return (
-        <div className="group relative flex flex-col">
-            <StyledCard
-                hoverable
-                cover={
-                    <ImageContainer>
-                        <img
-                            src={product.images[0]}
-                            alt={product.name}
-                        />
+  return (
+    <div className="group relative flex flex-col">
+      <StyledCard
+        hoverable
+        cover={
+          <ImageContainer>
+            <img
+              src={product.images[0]}
+              alt={product.name}
+            />
 
-                        {/* Badges */}
-                        <BadgeContainer>
-                            {product.isNew && (
-                                <StyledTag color="blue">NEW</StyledTag>
-                            )}
-                            {product.isBestSeller && (
-                                <StyledTag color="gold">BESTSELLER</StyledTag>
-                            )}
-                            {discount > 0 && (
-                                <StyledTag color="red">-{discount}%</StyledTag>
-                            )}
-                            {product.stock < 20 && product.stock > 0 && (
-                                <StyledTag color="orange">LOW STOCK</StyledTag>
-                            )}
-                        </BadgeContainer>
+            {/* Badges */}
+            <BadgeContainer>
+              {product.isNew && (
+                <StyledTag color="blue">NEW</StyledTag>
+              )}
+              {product.isBestSeller && (
+                <StyledTag color="gold">BESTSELLER</StyledTag>
+              )}
+              {discount > 0 && (
+                <StyledTag color="red">-{discount}%</StyledTag>
+              )}
+              {product.stock < 20 && product.stock > 0 && (
+                <StyledTag color="orange">LOW STOCK</StyledTag>
+              )}
+            </BadgeContainer>
 
-                        {/* Quick Actions Overlay (Desktop) */}
-                        <QuickActionsOverlay>
-                            <StyledButton
-                                type="text"
-                                icon={<EyeOutlined />}
-                            >
-                                Quick View
-                            </StyledButton>
-                            <Link to={`/product/${product._id}`}>
-                                <StyledButton
-                                    type="text"
-                                    icon={<ShoppingCartOutlined />}
-                                >
-                                    Options
-                                </StyledButton>
-                            </Link>
-                        </QuickActionsOverlay>
-                    </ImageContainer>
-                }
-                bordered={false}
-            >
-                <ProductInfo>
-                    {product.brand && (
-                        <BrandText type="secondary">
-                            {product.brand}
-                        </BrandText>
-                    )}
-                    <ProductName to={`/product/${product._id}`}>
-                        {product.name}
-                    </ProductName>
+            {/* Quick Actions Overlay (Desktop) */}
+            <QuickActionsOverlay>
+              <StyledButton
+                type="text"
+                icon={<EyeOutlined />}
+              >
+                Quick View
+              </StyledButton>
+              <Link to={`/product/${product._id}`}>
+                <StyledButton
+                  type="text"
+                  icon={<ShoppingCartOutlined />}
+                >
+                  Options
+                </StyledButton>
+              </Link>
+            </QuickActionsOverlay>
+          </ImageContainer>
+        }
+        bordered={false}
+      >
+        <ProductInfo>
+          {product.brand && (
+            <BrandText type="secondary">
+              {product.brand}
+            </BrandText>
+          )}
+          <ProductName to={`/product/${product._id}`}>
+            {product.name}
+          </ProductName>
 
-                    <RatingContainer>
-                        <Rate
-                            disabled
-                            defaultValue={product.rating || 0}
-                            style={{ fontSize: 12 }}
-                        />
-                        <ReviewCount type="secondary">
-                            ({product.reviewCount || 0})
-                        </ReviewCount>
-                    </RatingContainer>
+          <RatingContainer>
+            <Rate
+              disabled
+              defaultValue={product.rating || 0}
+              style={{ fontSize: 12 }}
+            />
+            <ReviewCount type="secondary">
+              ({product.reviewCount || 0})
+            </ReviewCount>
+          </RatingContainer>
 
-                    <PriceContainer>
-                        <Price strong>
-                            ${product.price.toFixed(2)}
-                        </Price>
-                        {product.originalPrice && (
-                            <OriginalPrice delete type="secondary">
-                                ${product.originalPrice.toFixed(2)}
-                            </OriginalPrice>
-                        )}
-                    </PriceContainer>
-                </ProductInfo>
+          <PriceContainer>
+            <Price strong>
+              {formatCurrency(product.price)}
+            </Price>
+            {product.originalPrice && (
+              <OriginalPrice delete type="secondary">
+                {formatCurrency(product.originalPrice)}
+              </OriginalPrice>
+            )}
+          </PriceContainer>
+        </ProductInfo>
 
-                {/* Mobile Action Button */}
-                <MobileButton to={`/product/${product._id}`}>
-                    <Button>
-                        Choose Options
-                    </Button>
-                </MobileButton>
-            </StyledCard>
-        </div>
-    );
+        {/* Mobile Action Button */}
+        <MobileButton to={`/product/${product._id}`}>
+          <Button>
+            Choose Options
+          </Button>
+        </MobileButton>
+      </StyledCard>
+    </div>
+  );
 };
 
 export default ProductCard;

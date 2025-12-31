@@ -4,6 +4,7 @@ import { ArrowUpOutlined, ArrowDownOutlined, ShoppingOutlined, UserOutlined, Dol
 import styled from 'styled-components';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import axios from '../../utils/axios';
+import { useSettings } from '../../context/SettingsContext';
 import dayjs from 'dayjs';
 
 const { Option } = Select;
@@ -59,6 +60,7 @@ const KPICard = ({ title, value, prefix, suffix, change, loading, formatter }) =
 };
 
 const Dashboard = () => {
+    const { formatCurrency, currencySymbol } = useSettings();
     const [loading, setLoading] = useState(true);
     const [range, setRange] = useState('last_30_days');
     const [data, setData] = useState({
@@ -107,7 +109,7 @@ const Dashboard = () => {
             title: 'Total',
             dataIndex: 'total_amount',
             key: 'total_amount',
-            render: (val) => `¥${(val || 0).toLocaleString()}`,
+            render: (val) => formatCurrency(val || 0),
         },
         {
             title: 'Payment',
@@ -158,7 +160,7 @@ const Dashboard = () => {
             dataIndex: 'revenue',
             key: 'revenue',
             align: 'right',
-            render: (val) => `¥${(val || 0).toLocaleString()}`,
+            render: (val) => formatCurrency(val || 0),
         },
     ];
 
@@ -205,7 +207,7 @@ const Dashboard = () => {
                         value={data.summary.total_revenue.value}
                         change={data.summary.total_revenue.change}
                         prefix={<DollarOutlined />}
-                        formatter={(value) => `¥${value.toLocaleString()}`}
+                        formatter={(value) => formatCurrency(value)}
                         loading={loading}
                     />
                 </Col>
@@ -224,7 +226,7 @@ const Dashboard = () => {
                         value={data.summary.average_order_value.value}
                         change={data.summary.average_order_value.change}
                         prefix={<ShoppingOutlined />}
-                        formatter={(value) => `¥${Math.round(value).toLocaleString()}`}
+                        formatter={(value) => formatCurrency(Math.round(value))}
                         loading={loading}
                     />
                 </Col>
@@ -259,10 +261,10 @@ const Dashboard = () => {
                                         dataKey="date"
                                         tickFormatter={(str) => dayjs(str).format('MMM D')}
                                     />
-                                    <YAxis tickFormatter={(val) => `¥${val / 1000}k`} />
+                                    <YAxis tickFormatter={(val) => `${currencySymbol}${val / 1000}k`} />
                                     <CartesianGrid strokeDasharray="3 3" vertical={false} />
                                     <Tooltip
-                                        formatter={(value) => [`¥${value.toLocaleString()}`, 'Revenue']}
+                                        formatter={(value) => [formatCurrency(value), 'Revenue']}
                                         labelFormatter={(label) => dayjs(label).format('MMMM D, YYYY')}
                                     />
                                     <Area

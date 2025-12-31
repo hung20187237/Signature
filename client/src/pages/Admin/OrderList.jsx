@@ -12,6 +12,7 @@ import {
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import dayjs from 'dayjs';
+import { useSettings } from '../../context/SettingsContext';
 
 const { RangePicker } = DatePicker;
 const { Option } = Select;
@@ -39,6 +40,7 @@ const FilterBar = styled.div`
 
 const OrderList = () => {
     const navigate = useNavigate();
+    const { formatCurrency } = useSettings();
     const [loading, setLoading] = useState(false);
     const [orders, setOrders] = useState([]);
     const [searchText, setSearchText] = useState('');
@@ -218,7 +220,7 @@ const OrderList = () => {
             title: 'Total',
             dataIndex: 'totalPrice',
             key: 'totalPrice',
-            render: (total) => `¥${(total || 0).toLocaleString()}`,
+            render: (total) => formatCurrency(total || 0),
             sorter: (a, b) => (a.totalPrice || 0) - (b.totalPrice || 0),
         },
         {

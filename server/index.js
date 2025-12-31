@@ -17,6 +17,7 @@ const Banner = require('./models/Banner');
 const collectionRoutes = require('./routes/collectionRoutes');
 const bannerRoutes = require('./routes/bannerRoutes');
 const blogRoutes = require('./routes/blogRoutes');
+const settingRoutes = require('./routes/settingRoutes');
 const BlogPost = require('./models/BlogPost');
 const BlogCategory = require('./models/BlogCategory');
 const BlogTag = require('./models/BlogTag');
@@ -82,6 +83,7 @@ app.use('/api/dashboard', dashboardRoutes);
 app.use('/api/collections', collectionRoutes);
 app.use('/api/banners', bannerRoutes);
 app.use('/api/blog', blogRoutes);
+app.use('/api/settings', settingRoutes);
 
 app.get('/', (req, res) => {
     res.send('API is running...');

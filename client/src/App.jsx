@@ -33,11 +33,13 @@ import CreateOrder from './pages/Admin/CreateOrder';
 import CustomerList from './pages/Admin/CustomerList';
 import CustomerDetail from './pages/Admin/CustomerDetail';
 import AdminProfile from './pages/Admin/Profile';
+import SettingsPage from './pages/Admin/Settings/SettingsPage';
 
 import AnnouncementBar from './components/Layout/AnnouncementBar';
 import CartDrawer from './components/Cart/CartDrawer';
 import ProtectedRoute from './components/ProtectedRoute';
 import { CartProvider } from './context/CartContext';
+import { SettingsProvider } from './context/SettingsContext';
 
 // Separate layout for customer pages to include Navbar/Footer
 const CustomerLayout = () => {
@@ -75,39 +77,42 @@ const CustomerLayout = () => {
 function App() {
   return (
     <CartProvider>
-      <Router>
-        <Routes>
-          {/* Admin Routes - Protected */}
-          <Route path="/admin" element={
-            <ProtectedRoute requireAdmin={true}>
-              <AdminLayout />
-            </ProtectedRoute>
-          }>
-            <Route index element={<AdminDashboard />} />
-            <Route path="products" element={<ProductList />} />
-            <Route path="products/new" element={<ProductForm />} />
-            <Route path="products/edit/:id" element={<ProductForm />} />
-            <Route path="collections" element={<CollectionList />} />
-            <Route path="collections/:id" element={<CollectionDetail />} />
-            <Route path="collections/:id" element={<CollectionDetail />} />
-            <Route path="content/banners" element={<BannerList />} />
-            <Route path="content/banners/:id" element={<BannerDetail />} />
-            <Route path="content/blog" element={<BlogList />} />
-            <Route path="content/blog/:id" element={<BlogDetail />} />
-            <Route path="orders" element={<OrderList />} />
-            <Route path="orders/new" element={<CreateOrder />} />
-            <Route path="orders/:id" element={<OrderDetail />} />
-            <Route path="orders/:id" element={<OrderDetail />} />
-            <Route path="customers" element={<CustomerList />} />
-            <Route path="customers/:id" element={<CustomerDetail />} />
-            <Route path="profile" element={<AdminProfile />} />
-            {/* Future admin routes will go here */}
-          </Route>
+      <SettingsProvider>
+        <Router>
+          <Routes>
+            {/* Admin Routes - Protected */}
+            <Route path="/admin" element={
+              <ProtectedRoute requireAdmin={true}>
+                <AdminLayout />
+              </ProtectedRoute>
+            }>
+              <Route index element={<AdminDashboard />} />
+              <Route path="products" element={<ProductList />} />
+              <Route path="products/new" element={<ProductForm />} />
+              <Route path="products/edit/:id" element={<ProductForm />} />
+              <Route path="collections" element={<CollectionList />} />
+              <Route path="collections/:id" element={<CollectionDetail />} />
+              <Route path="collections/:id" element={<CollectionDetail />} />
+              <Route path="content/banners" element={<BannerList />} />
+              <Route path="content/banners/:id" element={<BannerDetail />} />
+              <Route path="content/blog" element={<BlogList />} />
+              <Route path="content/blog/:id" element={<BlogDetail />} />
+              <Route path="orders" element={<OrderList />} />
+              <Route path="orders/new" element={<CreateOrder />} />
+              <Route path="orders/:id" element={<OrderDetail />} />
+              <Route path="orders/:id" element={<OrderDetail />} />
+              <Route path="customers" element={<CustomerList />} />
+              <Route path="customers/:id" element={<CustomerDetail />} />
+              <Route path="profile" element={<AdminProfile />} />
+              <Route path="settings" element={<SettingsPage />} />
+              {/* Future admin routes will go here */}
+            </Route>
 
-          {/* Customer Routes */}
-          <Route path="/*" element={<CustomerLayout />} />
-        </Routes>
-      </Router>
+            {/* Customer Routes */}
+            <Route path="/*" element={<CustomerLayout />} />
+          </Routes>
+        </Router>
+      </SettingsProvider>
     </CartProvider>
   );
 }

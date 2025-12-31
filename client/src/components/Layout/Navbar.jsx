@@ -11,6 +11,7 @@ import {
     DownOutlined,
 } from '@ant-design/icons';
 import { useCart } from '../../context/CartContext';
+import { useSettings } from '../../context/SettingsContext';
 
 // Styled Components
 const NavContainer = styled.nav`
@@ -445,6 +446,16 @@ const Navbar = () => {
     const [searchQuery, setSearchQuery] = useState('');
     const { toggleCart, getCartCount } = useCart();
     const navigate = useNavigate();
+    const { settings, t, currency, language } = useSettings(); // Use Global Settings
+
+    // Determine region name based on language/currency setting
+    const getRegionText = () => {
+        let regionKey = 'region.global';
+        if (language === 'vi' || currency === 'VND') regionKey = 'region.vietnam';
+        if (language === 'ja' || currency === 'JPY') regionKey = 'region.japan';
+
+        return `${t(regionKey)} (${currency})`;
+    };
 
     const handleSearch = (e) => {
         e.preventDefault();
@@ -513,7 +524,7 @@ const Navbar = () => {
                 <TopBarContent>
                     <TopBarButton>
                         <GlobalOutlined style={{ fontSize: 14 }} />
-                        Region: Global (USD)
+                        Region: {getRegionText()}
                     </TopBarButton>
                     <Link to="/login">
                         <TopBarButton>
@@ -537,8 +548,14 @@ const Navbar = () => {
 
                     {/* Logo */}
                     <Logo to="/">
-                        <span className="logo-text">signature</span>
-                        <span className="logo-subtitle">+1</span>
+                        {settings['storefront.logo_url'] ? (
+                            <img src={settings['storefront.logo_url']} alt={settings['general.store_name']} style={{ height: 40 }} />
+                        ) : (
+                            <div className="flex flex-col items-start">
+                                <span className="logo-text">{settings['general.store_name'] || 'signature'}</span>
+                                <span className="logo-subtitle">+1</span>
+                            </div>
+                        )}
                     </Logo>
 
                     {/* Desktop Navigation */}

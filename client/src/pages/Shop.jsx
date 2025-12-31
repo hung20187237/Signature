@@ -6,6 +6,7 @@ import { Select, Checkbox, InputNumber, Button, Spin, Drawer } from 'antd';
 import { FilterOutlined, AppstoreOutlined, UnorderedListOutlined } from '@ant-design/icons';
 import Breadcrumb from '../components/Layout/Breadcrumb';
 import ProductCard from '../components/Product/ProductCard';
+import { useSettings } from '../context/SettingsContext';
 
 const { Option } = Select;
 
@@ -249,6 +250,7 @@ const LoadingContainer = styled.div`
 `;
 
 const Shop = () => {
+  const { currencySymbol } = useSettings();
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filteredProducts, setFilteredProducts] = useState([]);
@@ -391,14 +393,14 @@ const Shop = () => {
             value={priceRange[0]}
             onChange={(value) => setPriceRange([value, priceRange[1]])}
             min={0}
-            prefix="$"
+            prefix={currencySymbol}
           />
           <span>-</span>
           <StyledInputNumber
             value={priceRange[1]}
             onChange={(value) => setPriceRange([priceRange[0], value])}
             min={0}
-            prefix="$"
+            prefix={currencySymbol}
           />
         </PriceRangeContainer>
       </FilterSection>

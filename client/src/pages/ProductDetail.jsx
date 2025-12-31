@@ -6,6 +6,7 @@ import { Rate, InputNumber, Button, Tabs, Spin } from 'antd';
 import { HeartOutlined, TruckOutlined, SafetyOutlined, SyncOutlined, MinusOutlined, PlusOutlined } from '@ant-design/icons';
 import Breadcrumb from '../components/Layout/Breadcrumb';
 import ProductCard from '../components/Product/ProductCard';
+import { useSettings } from '../context/SettingsContext';
 
 const { TabPane } = Tabs;
 
@@ -425,252 +426,253 @@ const LoadingContainer = styled.div`
 `;
 
 const ProductDetail = () => {
-    const { id } = useParams();
-    const [product, setProduct] = useState(null);
-    const [relatedProducts, setRelatedProducts] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [quantity, setQuantity] = useState(1);
-    const [selectedOptions, setSelectedOptions] = useState({});
-    const [mainImage, setMainImage] = useState('');
+  const { id } = useParams();
+  const { formatCurrency } = useSettings();
+  const [product, setProduct] = useState(null);
+  const [relatedProducts, setRelatedProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [quantity, setQuantity] = useState(1);
+  const [selectedOptions, setSelectedOptions] = useState({});
+  const [mainImage, setMainImage] = useState('');
 
-    useEffect(() => {
-        const fetchProduct = async () => {
-            try {
-                const { data } = await axios.get(`http://localhost:5000/api/products/${id}`);
-                setProduct(data);
-                setMainImage(data.images[0]);
+  useEffect(() => {
+    const fetchProduct = async () => {
+      try {
+        const { data } = await axios.get(`http://localhost:5000/api/products/${id}`);
+        setProduct(data);
+        setMainImage(data.images[0]);
 
-                // Initialize options
-                if (data.options) {
-                    const initialOptions = {};
-                    data.options.forEach(opt => {
-                        initialOptions[opt.name] = opt.values[0];
-                    });
-                    setSelectedOptions(initialOptions);
-                }
+        // Initialize options
+        if (data.options) {
+          const initialOptions = {};
+          data.options.forEach(opt => {
+            initialOptions[opt.name] = opt.values[0];
+          });
+          setSelectedOptions(initialOptions);
+        }
 
-                // Fetch related products
-                const allProductsRes = await axios.get('http://localhost:5000/api/products');
-                const related = allProductsRes.data
-                    .filter(p => p.category === data.category && p._id !== data._id)
-                    .slice(0, 4);
-                setRelatedProducts(related);
+        // Fetch related products
+        const allProductsRes = await axios.get('http://localhost:5000/api/products');
+        const related = allProductsRes.data
+          .filter(p => p.category === data.category && p._id !== data._id)
+          .slice(0, 4);
+        setRelatedProducts(related);
 
-                setLoading(false);
-            } catch (error) {
-                console.error('Error fetching product:', error);
-                setLoading(false);
-            }
-        };
-
-        fetchProduct();
-        window.scrollTo(0, 0);
-    }, [id]);
-
-    const handleQuantityChange = (type) => {
-        if (type === 'dec' && quantity > 1) setQuantity(quantity - 1);
-        if (type === 'inc' && quantity < (product.stock || 10)) setQuantity(quantity + 1);
+        setLoading(false);
+      } catch (error) {
+        console.error('Error fetching product:', error);
+        setLoading(false);
+      }
     };
 
-    const handleOptionChange = (optionName, value) => {
-        setSelectedOptions(prev => ({ ...prev, [optionName]: value }));
-    };
+    fetchProduct();
+    window.scrollTo(0, 0);
+  }, [id]);
 
-    if (loading) {
-        return (
-            <LoadingContainer>
-                <Spin size="large" />
-            </LoadingContainer>
-        );
-    }
+  const handleQuantityChange = (type) => {
+    if (type === 'dec' && quantity > 1) setQuantity(quantity - 1);
+    if (type === 'inc' && quantity < (product.stock || 10)) setQuantity(quantity + 1);
+  };
 
-    if (!product) {
-        return <div style={{ textAlign: 'center', padding: '80px 0' }}>Product not found</div>;
-    }
+  const handleOptionChange = (optionName, value) => {
+    setSelectedOptions(prev => ({ ...prev, [optionName]: value }));
+  };
 
+  if (loading) {
     return (
-        <PageContainer>
-            <Container>
-                <Breadcrumb />
-
-                <ProductGrid>
-                    {/* Image Gallery */}
-                    <ImageSection>
-                        <ThumbnailGrid>
-                            {product.images.map((image, index) => (
-                                <ThumbnailButton
-                                    key={index}
-                                    $active={mainImage === image}
-                                    onClick={() => setMainImage(image)}
-                                >
-                                    <img src={image} alt={`Product ${index + 1}`} />
-                                </ThumbnailButton>
-                            ))}
-                        </ThumbnailGrid>
-
-                        <MainImageContainer>
-                            <img src={mainImage} alt={product.name} />
-                        </MainImageContainer>
-                    </ImageSection>
-
-                    {/* Product Info */}
-                    <ProductInfo>
-                        <div>
-                            {product.brand && <BrandName>{product.brand}</BrandName>}
-                            <ProductTitle>{product.name}</ProductTitle>
-                        </div>
-
-                        <RatingContainer>
-                            <Rate disabled defaultValue={product.rating || 0} />
-                            <ReviewLink href="#reviews">
-                                {product.reviewCount} reviews
-                            </ReviewLink>
-                        </RatingContainer>
-
-                        <PriceContainer>
-                            <Price>${product.price.toFixed(2)}</Price>
-                            {product.originalPrice && (
-                                <OriginalPrice>${product.originalPrice.toFixed(2)}</OriginalPrice>
-                            )}
-                        </PriceContainer>
-
-                        <Description>{product.description}</Description>
-
-                        {/* Options */}
-                        {product.options && product.options.length > 0 && (
-                            <OptionsSection>
-                                {product.options.map((option) => (
-                                    <OptionGroup key={option.name}>
-                                        <OptionLabel>{option.name}</OptionLabel>
-                                        <OptionButtons>
-                                            {option.values.map((value) => (
-                                                <OptionButton
-                                                    key={value}
-                                                    $selected={selectedOptions[option.name] === value}
-                                                    onClick={() => handleOptionChange(option.name, value)}
-                                                >
-                                                    {value}
-                                                </OptionButton>
-                                            ))}
-                                        </OptionButtons>
-                                    </OptionGroup>
-                                ))}
-                            </OptionsSection>
-                        )}
-
-                        {/* Quantity & Stock */}
-                        <QuantityStockContainer>
-                            <QuantityGroup>
-                                <QuantityLabel>Quantity</QuantityLabel>
-                                <QuantityControl>
-                                    <QuantityButton
-                                        onClick={() => handleQuantityChange('dec')}
-                                        disabled={quantity <= 1}
-                                    >
-                                        <MinusOutlined />
-                                    </QuantityButton>
-                                    <QuantityInput
-                                        type="text"
-                                        value={quantity}
-                                        readOnly
-                                    />
-                                    <QuantityButton
-                                        onClick={() => handleQuantityChange('inc')}
-                                        disabled={quantity >= (product.stock || 10)}
-                                    >
-                                        <PlusOutlined />
-                                    </QuantityButton>
-                                </QuantityControl>
-                            </QuantityGroup>
-                        </QuantityStockContainer>
-
-                        <StockIndicator>
-                            <StockDot $inStock={product.stock > 0} />
-                            <StockText>
-                                {product.stock > 0 ? `${product.stock} in stock` : 'Out of stock'}
-                            </StockText>
-                        </StockIndicator>
-
-                        {/* Actions */}
-                        <ActionButtons>
-                            <AddToCartButton type="primary" size="large">
-                                Add to Cart
-                            </AddToCartButton>
-                            <WishlistButton icon={<HeartOutlined />} />
-                        </ActionButtons>
-
-                        {/* Shipping Info */}
-                        <ShippingInfo>
-                            <InfoItem>
-                                <TruckOutlined />
-                                <span>Free shipping on orders over $50</span>
-                            </InfoItem>
-                            <InfoItem>
-                                <SafetyOutlined />
-                                <span>2-year warranty included</span>
-                            </InfoItem>
-                            <InfoItem>
-                                <SyncOutlined />
-                                <span>30-day return policy</span>
-                            </InfoItem>
-                        </ShippingInfo>
-                    </ProductInfo>
-                </ProductGrid>
-
-                {/* Tabs Section */}
-                <TabsSection>
-                    <StyledTabs defaultActiveKey="description">
-                        <TabPane tab="Description" key="description">
-                            <TabContent>
-                                <p>{product.description}</p>
-                                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
-                            </TabContent>
-                        </TabPane>
-                        <TabPane tab="Specs" key="specs">
-                            <SpecsGrid>
-                                {product.specs ? (
-                                    Object.entries(product.specs).map(([key, value]) => (
-                                        <SpecItem key={key}>
-                                            <SpecLabel>{key}</SpecLabel>
-                                            <SpecValue>{value}</SpecValue>
-                                        </SpecItem>
-                                    ))
-                                ) : (
-                                    <p style={{ color: '#6b7280' }}>No specifications available.</p>
-                                )}
-                            </SpecsGrid>
-                        </TabPane>
-                        <TabPane tab="Reviews" key="reviews">
-                            <TabContent>
-                                <h3 style={{ fontSize: '1.125rem', fontWeight: '500', marginBottom: '16px' }}>
-                                    Customer Reviews
-                                </h3>
-                                <RatingContainer style={{ marginBottom: '16px' }}>
-                                    <Rate disabled defaultValue={product.rating || 0} />
-                                    <p style={{ margin: 0, fontSize: '14px' }}>
-                                        Based on {product.reviewCount} reviews
-                                    </p>
-                                </RatingContainer>
-                                <p style={{ color: '#6b7280', fontSize: '14px' }}>
-                                    Review functionality coming soon.
-                                </p>
-                            </TabContent>
-                        </TabPane>
-                    </StyledTabs>
-                </TabsSection>
-
-                {/* Related Products */}
-                <RelatedSection>
-                    <SectionTitle>You may also like</SectionTitle>
-                    <RelatedGrid>
-                        {relatedProducts.map((related) => (
-                            <ProductCard key={related._id} product={related} />
-                        ))}
-                    </RelatedGrid>
-                </RelatedSection>
-            </Container>
-        </PageContainer>
+      <LoadingContainer>
+        <Spin size="large" />
+      </LoadingContainer>
     );
+  }
+
+  if (!product) {
+    return <div style={{ textAlign: 'center', padding: '80px 0' }}>Product not found</div>;
+  }
+
+  return (
+    <PageContainer>
+      <Container>
+        <Breadcrumb />
+
+        <ProductGrid>
+          {/* Image Gallery */}
+          <ImageSection>
+            <ThumbnailGrid>
+              {product.images.map((image, index) => (
+                <ThumbnailButton
+                  key={index}
+                  $active={mainImage === image}
+                  onClick={() => setMainImage(image)}
+                >
+                  <img src={image} alt={`Product ${index + 1}`} />
+                </ThumbnailButton>
+              ))}
+            </ThumbnailGrid>
+
+            <MainImageContainer>
+              <img src={mainImage} alt={product.name} />
+            </MainImageContainer>
+          </ImageSection>
+
+          {/* Product Info */}
+          <ProductInfo>
+            <div>
+              {product.brand && <BrandName>{product.brand}</BrandName>}
+              <ProductTitle>{product.name}</ProductTitle>
+            </div>
+
+            <RatingContainer>
+              <Rate disabled defaultValue={product.rating || 0} />
+              <ReviewLink href="#reviews">
+                {product.reviewCount} reviews
+              </ReviewLink>
+            </RatingContainer>
+
+            <PriceContainer>
+              <Price>{formatCurrency(product.price)}</Price>
+              {product.originalPrice && (
+                <OriginalPrice>{formatCurrency(product.originalPrice)}</OriginalPrice>
+              )}
+            </PriceContainer>
+
+            <Description>{product.description}</Description>
+
+            {/* Options */}
+            {product.options && product.options.length > 0 && (
+              <OptionsSection>
+                {product.options.map((option) => (
+                  <OptionGroup key={option.name}>
+                    <OptionLabel>{option.name}</OptionLabel>
+                    <OptionButtons>
+                      {option.values.map((value) => (
+                        <OptionButton
+                          key={value}
+                          $selected={selectedOptions[option.name] === value}
+                          onClick={() => handleOptionChange(option.name, value)}
+                        >
+                          {value}
+                        </OptionButton>
+                      ))}
+                    </OptionButtons>
+                  </OptionGroup>
+                ))}
+              </OptionsSection>
+            )}
+
+            {/* Quantity & Stock */}
+            <QuantityStockContainer>
+              <QuantityGroup>
+                <QuantityLabel>Quantity</QuantityLabel>
+                <QuantityControl>
+                  <QuantityButton
+                    onClick={() => handleQuantityChange('dec')}
+                    disabled={quantity <= 1}
+                  >
+                    <MinusOutlined />
+                  </QuantityButton>
+                  <QuantityInput
+                    type="text"
+                    value={quantity}
+                    readOnly
+                  />
+                  <QuantityButton
+                    onClick={() => handleQuantityChange('inc')}
+                    disabled={quantity >= (product.stock || 10)}
+                  >
+                    <PlusOutlined />
+                  </QuantityButton>
+                </QuantityControl>
+              </QuantityGroup>
+            </QuantityStockContainer>
+
+            <StockIndicator>
+              <StockDot $inStock={product.stock > 0} />
+              <StockText>
+                {product.stock > 0 ? `${product.stock} in stock` : 'Out of stock'}
+              </StockText>
+            </StockIndicator>
+
+            {/* Actions */}
+            <ActionButtons>
+              <AddToCartButton type="primary" size="large">
+                Add to Cart
+              </AddToCartButton>
+              <WishlistButton icon={<HeartOutlined />} />
+            </ActionButtons>
+
+            {/* Shipping Info */}
+            <ShippingInfo>
+              <InfoItem>
+                <TruckOutlined />
+                <span>Free shipping on orders over $50</span>
+              </InfoItem>
+              <InfoItem>
+                <SafetyOutlined />
+                <span>2-year warranty included</span>
+              </InfoItem>
+              <InfoItem>
+                <SyncOutlined />
+                <span>30-day return policy</span>
+              </InfoItem>
+            </ShippingInfo>
+          </ProductInfo>
+        </ProductGrid>
+
+        {/* Tabs Section */}
+        <TabsSection>
+          <StyledTabs defaultActiveKey="description">
+            <TabPane tab="Description" key="description">
+              <TabContent>
+                <p>{product.description}</p>
+                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+              </TabContent>
+            </TabPane>
+            <TabPane tab="Specs" key="specs">
+              <SpecsGrid>
+                {product.specs ? (
+                  Object.entries(product.specs).map(([key, value]) => (
+                    <SpecItem key={key}>
+                      <SpecLabel>{key}</SpecLabel>
+                      <SpecValue>{value}</SpecValue>
+                    </SpecItem>
+                  ))
+                ) : (
+                  <p style={{ color: '#6b7280' }}>No specifications available.</p>
+                )}
+              </SpecsGrid>
+            </TabPane>
+            <TabPane tab="Reviews" key="reviews">
+              <TabContent>
+                <h3 style={{ fontSize: '1.125rem', fontWeight: '500', marginBottom: '16px' }}>
+                  Customer Reviews
+                </h3>
+                <RatingContainer style={{ marginBottom: '16px' }}>
+                  <Rate disabled defaultValue={product.rating || 0} />
+                  <p style={{ margin: 0, fontSize: '14px' }}>
+                    Based on {product.reviewCount} reviews
+                  </p>
+                </RatingContainer>
+                <p style={{ color: '#6b7280', fontSize: '14px' }}>
+                  Review functionality coming soon.
+                </p>
+              </TabContent>
+            </TabPane>
+          </StyledTabs>
+        </TabsSection>
+
+        {/* Related Products */}
+        <RelatedSection>
+          <SectionTitle>You may also like</SectionTitle>
+          <RelatedGrid>
+            {relatedProducts.map((related) => (
+              <ProductCard key={related._id} product={related} />
+            ))}
+          </RelatedGrid>
+        </RelatedSection>
+      </Container>
+    </PageContainer>
+  );
 };
 
 export default ProductDetail;

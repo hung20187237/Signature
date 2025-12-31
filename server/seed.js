@@ -322,6 +322,33 @@ const seedData = async () => {
 
         console.log('✅ Blog data created');
 
+        // Create Default Settings
+        const Setting = require('./models/Setting');
+        const defaultSettings = [
+            // General
+            { key: 'general.store_name', value: 'Bungu Store', group_name: 'general', value_type: 'string', is_public: true },
+            { key: 'general.store_email', value: 'support@bungu.store', group_name: 'general', value_type: 'string', is_public: true },
+            { key: 'general.timezone', value: 'Asia/Tokyo', group_name: 'general', value_type: 'string', is_public: true },
+
+            // Storefront
+            { key: 'storefront.logo_url', value: '', group_name: 'storefront', value_type: 'url', is_public: true },
+            { key: 'storefront.theme_primary_color', value: '#1A73E8', group_name: 'storefront', value_type: 'color', is_public: true },
+
+            // Localization
+            { key: 'localization.default_language', value: 'en', group_name: 'localization', value_type: 'string', is_public: true },
+            { key: 'localization.currency', value: 'JPY', group_name: 'localization', value_type: 'string', is_public: true },
+
+            // Checkout
+            { key: 'checkout.allow_guest', value: 'true', group_name: 'checkout', value_type: 'boolean', is_public: true },
+
+            // Email (Private)
+            { key: 'email.from_name', value: 'Bungu Store', group_name: 'email', value_type: 'string', is_public: false },
+            { key: 'email.from_email', value: 'no-reply@bungu.store', group_name: 'email', value_type: 'string', is_public: false }
+        ];
+
+        await Setting.bulkCreate(defaultSettings, { ignoreDuplicates: true });
+        console.log('✅ Default settings created');
+
         process.exit(0);
     } catch (error) {
         console.error('❌ Error seeding database:', error);

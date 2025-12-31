@@ -28,6 +28,7 @@ import {
     CopyOutlined
 } from '@ant-design/icons';
 import { useNavigate, useParams } from 'react-router-dom';
+import { useSettings } from '../../context/SettingsContext';
 import styled from 'styled-components';
 import dayjs from 'dayjs';
 
@@ -76,6 +77,7 @@ const ItemImage = styled.img`
 const OrderDetail = () => {
     const navigate = useNavigate();
     const { id } = useParams();
+    const { formatCurrency } = useSettings();
     const [loading, setLoading] = useState(false);
     const [order, setOrder] = useState(null);
     const [note, setNote] = useState('');
@@ -279,8 +281,8 @@ const OrderDetail = () => {
                                         }
                                     />
                                     <div style={{ textAlign: 'right' }}>
-                                        <div>¥{(item.price || 0).toLocaleString()} x {item.qty || item.quantity || 1}</div>
-                                        <div style={{ fontWeight: 500 }}>¥{((item.price || 0) * (item.qty || item.quantity || 1)).toLocaleString()}</div>
+                                        <div>{formatCurrency(item.price || 0)} x {item.qty || item.quantity || 1}</div>
+                                        <div style={{ fontWeight: 500 }}>{formatCurrency((item.price || 0) * (item.qty || item.quantity || 1))}</div>
                                     </div>
                                 </List.Item>
                             )}
@@ -290,20 +292,20 @@ const OrderDetail = () => {
                             <Col span={10}>
                                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
                                     <Text>Subtotal</Text>
-                                    <Text>¥{(order.itemsPrice || 0).toLocaleString()}</Text>
+                                    <Text>{formatCurrency(order.itemsPrice || 0)}</Text>
                                 </div>
                                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
                                     <Text>Shipping</Text>
-                                    <Text>¥{(order.shippingPrice || 0).toLocaleString()}</Text>
+                                    <Text>{formatCurrency(order.shippingPrice || 0)}</Text>
                                 </div>
                                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
                                     <Text>Tax</Text>
-                                    <Text>¥{(order.taxPrice || 0).toLocaleString()}</Text>
+                                    <Text>{formatCurrency(order.taxPrice || 0)}</Text>
                                 </div>
                                 <Divider style={{ margin: '12px 0' }} />
                                 <div style={{ display: 'flex', justifyContent: 'space-between', fontWeight: 'bold', fontSize: '1.1rem' }}>
                                     <Text strong>Total</Text>
-                                    <Text strong>¥{(order.totalPrice || 0).toLocaleString()}</Text>
+                                    <Text strong>{formatCurrency(order.totalPrice || 0)}</Text>
                                 </div>
                             </Col>
                         </Row>
@@ -333,7 +335,7 @@ const OrderDetail = () => {
                             columns={[
                                 { title: 'Provider', dataIndex: 'provider', key: 'provider' },
                                 { title: 'Transaction ID', dataIndex: 'id', key: 'id' },
-                                { title: 'Amount', dataIndex: 'amount', key: 'amount', render: val => `¥${val.toLocaleString()}` },
+                                { title: 'Amount', dataIndex: 'amount', key: 'amount', render: val => formatCurrency(val) },
                                 { title: 'Status', dataIndex: 'status', key: 'status', render: val => <Tag color="success">{val}</Tag> },
                                 { title: 'Date', dataIndex: 'date', key: 'date', render: val => dayjs(val).format('MMM D, h:mm A') },
                             ]}
@@ -349,7 +351,7 @@ const OrderDetail = () => {
                                 pagination={false}
                                 columns={[
                                     { title: 'Refund ID', dataIndex: 'id', key: 'id' },
-                                    { title: 'Amount', dataIndex: 'amount', key: 'amount', render: val => `¥${val.toLocaleString()}` },
+                                    { title: 'Amount', dataIndex: 'amount', key: 'amount', render: val => formatCurrency(val) },
                                     { title: 'Reason', dataIndex: 'reason', key: 'reason' },
                                     { title: 'Date', dataIndex: 'date', key: 'date', render: val => dayjs(val).format('MMM D, h:mm A') },
                                 ]}
